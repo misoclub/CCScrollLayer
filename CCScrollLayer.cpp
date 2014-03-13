@@ -7,7 +7,8 @@
 //
 
 #include "CCScrollLayer.h"
-#include "CCTouchHandler.h"
+#include "cocos2d.h"
+//#include "CCTouchHandler.h"
 
 #include <assert.h>
 
@@ -72,7 +73,7 @@ namespace cocos2d
         
 		// Show indicator by default.
 		m_bShowPagesIndicator = true;
-		m_tPagesIndicatorPosition = ccp(0.5f * m_tContentSize.width, ceilf(m_tContentSize.height / 8.0f));
+		m_tPagesIndicatorPosition = ccp(0.5f * m_obContentSize.width, ceilf(m_obContentSize.height / 8.0f));
         
 		// Set up the starting variables
 		m_uCurrentScreen = 0;
@@ -103,7 +104,7 @@ namespace cocos2d
 			CCLayer* layer = (CCLayer*)object;
 			layer->setAnchorPoint(ccp(0,0));
 			layer->setContentSize(CCDirector::sharedDirector()->getWinSize());
-			layer->setPosition(ccp((i * (m_tContentSize.width - m_fPagesWidthOffset)), 0));
+			layer->setPosition(ccp((i * (m_obContentSize.width - m_fPagesWidthOffset)), 0));
 			if (!layer->getParent())
 				addChild(layer);
 			i++;
@@ -165,7 +166,7 @@ namespace cocos2d
     
 	unsigned int CCScrollLayer::pageNumberForPosition(const CCPoint& position)
 	{
-		CGFloat pageFloat = - m_tPosition.x / (m_tContentSize.width - m_fPagesWidthOffset);
+		CGFloat pageFloat = - m_obPosition.x / (m_obContentSize.width - m_fPagesWidthOffset);
 		int pageNumber = (int)ceilf(pageFloat);
 		if ((CGFloat)pageNumber - pageFloat  >= 0.5f)
 			pageNumber--;
@@ -179,7 +180,7 @@ namespace cocos2d
     
 	CCPoint CCScrollLayer::positionForPageWithNumber(unsigned int pageNumber)
 	{
-		return ccp(pageNumber * -1.f * (m_tContentSize.width - m_fPagesWidthOffset), 0.0f);
+		return ccp(pageNumber * -1.f * (m_obContentSize.width - m_fPagesWidthOffset), 0.0f);
 	}
     
 	void CCScrollLayer::moveToPage(unsigned int pageNumber)
@@ -350,7 +351,7 @@ namespace cocos2d
         
 		if (m_iState == kCCScrollLayerStateSliding)
 		{
-			float desiredX = (m_uCurrentScreen * -1.f * (m_tContentSize.width - m_fPagesWidthOffset)) + touchPoint.x - m_fStartSwipe;
+			float desiredX = (m_uCurrentScreen * -1.f * (m_obContentSize.width - m_fPagesWidthOffset)) + touchPoint.x - m_fStartSwipe;
 			unsigned int page = pageNumberForPosition(ccp(desiredX, 0));
 			float offset = desiredX - positionForPageWithNumber(page).x;
 			if ((page == 0 && offset > 0) || (page == m_pLayers->count() - 1 && offset < 0))
@@ -374,7 +375,7 @@ namespace cocos2d
 		float delta = touchPoint.x - m_fStartSwipe;
 		if (fabs(delta) >= m_fMinimumTouchLengthToChangePage)
 		{
-			selectedPage = pageNumberForPosition(m_tPosition);
+			selectedPage = pageNumberForPosition(m_obPosition);
 			if (selectedPage == m_uCurrentScreen)
 			{
 				if (delta < 0.f && selectedPage < m_pLayers->count() - 1)
